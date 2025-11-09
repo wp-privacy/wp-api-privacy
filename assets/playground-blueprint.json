@@ -1,0 +1,14 @@
+{
+    "landingPage": "wp-admin/",
+    "features": {
+        "networking": true
+    },
+    "plugins": [
+        "wp-api-privacy"
+    ],
+    "steps": [
+        {
+            "step": "login"
+        }
+    ]
+}
