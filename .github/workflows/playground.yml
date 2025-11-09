@@ -1,0 +1,113 @@
+name: Playground Comment
+
+on:
+  pull_request:
+
+jobs:
+  playground:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      actions: read
+
+    steps:
+      - uses: actions/checkout@v5
+
+      # Prepare a folder named exactly like the repo as the plugin root.
+      # If the repo already has such a folder (common for WP plugins), use it.
+      # Otherwise, stage one and copy root files into it (excluding CI junk).
+      - name: Prepare plugin folder
+        id: prep
+        run: |
+          set -euxo pipefail
+          REPO="${{ github.event.repository.name }}"
+          if [ -d "$REPO" ]; then
+            # Plugin already lives in a subfolder named like the repo
+            echo "PKG_DIR=$REPO" >> "$GITHUB_OUTPUT"
+          else
+            # Create a clean staging dir to avoid copying into itself
+            STAGE="${REPO}-pkg"
+            mkdir -p "$STAGE/$REPO"
+            rsync -a \
+              --exclude='.git' \
+              --exclude='.github' \
+              --exclude='node_modules' \
+              --exclude="${STAGE}" \
+              ./ "$STAGE/$REPO/"
+            echo "PKG_DIR=$STAGE/$REPO" >> "$GITHUB_OUTPUT"
+
+          fi
+
+      - name: Update plugin version with PR number
+        run: |
+          set -euxo pipefail
+          PLUGIN_FILE="${{ steps.prep.outputs.PKG_DIR }}/${{ github.event.repository.name }}.php"
+          PR_NUMBER="${{ github.event.number }}"
+
+          # Extract current version
+          CURRENT_VERSION=$(grep -o "Version:[[:space:]]*[0-9.]*" "$PLUGIN_FILE" | sed 's/Version:[[:space:]]*//')
+
+          # Increment patch version if it exists, otherwise increment minor version
+          # Handle versions like 2.1.5 or 2.1
+          if [[ "$CURRENT_VERSION" =~ ^([0-9]+)\.([0-9]+)(\.([0-9]+))?$ ]]; then
+            MAJOR="${BASH_REMATCH[1]}"
+            MINOR="${BASH_REMATCH[2]}"
+            PATCH="${BASH_REMATCH[4]}"
+
+            # Build new version with 'b' suffix
+            if [ -n "$PATCH" ]; then
+              # If patch exists, increment patch by 1
+              PATCH=$((PATCH + 1))
+              NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}b - PR ${PR_NUMBER}"
+            else
+              # If no patch, increment minor by 1
+              MINOR=$((MINOR + 1))
+              NEW_VERSION="${MAJOR}.${MINOR}b - PR ${PR_NUMBER}"
+            fi
+          else
+            # Fallback: if version format is unexpected, just add .1 and 'b'
+            NEW_VERSION="${CURRENT_VERSION}.1b - PR ${PR_NUMBER}"
+          fi
+
+          # Replace the version line
+          sed -i "s/Version:[[:space:]]*[0-9.]*/Version:           ${NEW_VERSION}/" "$PLUGIN_FILE"
+
+      - name: Prepare blueprint with artifact link
+        id: blueprint
+        run: |
+          set -euxo pipefail
+          ARTIFACT_URL="https://nightly.link/${{ github.repository }}/actions/runs/${{ github.run_id }}/${{ github.event.repository.name }}.zip"
+
+          # Use Node.js to parse, modify, and stringify the JSON
+          BLUEPRINT=$(node -e "
+            const fs = require('fs');
+            const blueprint = JSON.parse(fs.readFileSync('assets/playground-blueprint.json', 'utf8'));
+            blueprint.plugins = blueprint.plugins.map(plugin =>
+              plugin === '${{ github.event.repository.name }}' ? '$ARTIFACT_URL' : plugin
+            );
+            console.log(JSON.stringify(blueprint));
+          ")
+
+          # Base64 encode the blueprint
+          ENCODED_BLUEPRINT=$(echo -n "$BLUEPRINT" | base64 -w 0)
+
+          echo "blueprint=$ENCODED_BLUEPRINT" >> "$GITHUB_OUTPUT"
+
+      # Upload the FOLDER (not a .zip). The artifact service zips it for us,
+      # keeping the top-level folder name inside the archive.
+      - name: Upload plugin artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: ${{ github.event.repository.name }}
+          path: ${{ steps.prep.outputs.PKG_DIR }}
+          # Optional: faster uploads for already-compressed assets
+          compression-level: 0
+
+      # Comment with a Playground link that installs from the artifact ZIP
+      - uses: mshick/add-pr-comment@v2
+        with:
+          message: |
+            **Test on Playground**
+            [Test this pull request on the Playground](https://playground.wordpress.net/#${{ steps.blueprint.outputs.blueprint }})
+            or [download the zip](https://nightly.link/${{ github.repository }}/actions/runs/${{ github.run_id }}/${{ github.event.repository.name }}.zip)
