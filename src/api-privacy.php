@@ -110,7 +110,7 @@ class ApiPrivacy extends GithubUpdater {
     }
 
     private function removeUrlFromUserAgent( $str ) {
-        if ( strpos( $str, ';' ) !== false ) {
+        if ( ! empty( $str ) && strpos( $str, ';' ) !== false ) {
             $split = explode( ';', $str );
 
             return $split[ 0 ];
