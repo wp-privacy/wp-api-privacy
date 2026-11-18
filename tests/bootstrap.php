@@ -8,10 +8,10 @@
  * @package WP_Privacy\WP_API_Privacy
  */
 
-require_once dirname( __DIR__ ) . '/vendor/autoload.php';
-
 // The source files bail out unless WordPress is loaded.
 define( 'WPINC', 'wp-includes' );
+
+require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 
 // Mirrors of the constants defined in wp-api-privacy.php.
 define( 'PRIVACY_VERSION', '0.0.0-test' );
