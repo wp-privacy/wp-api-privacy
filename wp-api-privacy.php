@@ -7,7 +7,7 @@
 	Author: Duane Storey
 	Author URI: https://duanestorey.com
 	Version: 1.2.4
-	Requires PHP: 6.0
+	Requires PHP: 7.4
 	Requires at least: 6.0
 	Tested up to: 6.8
 	Update URI: https://github.com/wp-privacy/wp-api-privacy
