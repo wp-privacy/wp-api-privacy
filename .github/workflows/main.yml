@@ -2,7 +2,6 @@
 # also create a release of the installable plugin.
 # Steps to execute:
 # - Checkout the source code
-# - Run "composer install" to download all dependencies under vendor/
 # - Create a .zip file, excluding:
 #   - All hidden files (.git, .gitignore, etc)
 #   - All development files, ending in .dist
@@ -10,34 +9,49 @@
 #   - Markdown files concerning development
 #   - Folder build/ <= created only to store the .zip file
 #   - Folder dev-helpers/ <= not needed for the plugin
+#   - Folder tests/ <= the unit tests
 # - Upload the .zip file as an artifact to the action (this step is possibly optional)
 # - Upload the .zip file as a release, for download
 name: Generate Installable Plugin, and Upload as Release Asset
 on:
   release:
     types: [published]
+
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Upload Release Asset
     runs-on: ubuntu-latest
+    permissions:
+      # Needed to upload the .zip file to the release.
+      contents: write
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Build project
         run: |
           mkdir build
+      # The patterns are quoted, so zip (and not the shell) matches them
+      # against the full path of every file.
       - name: Create artifact
-        uses: montudor/action-zip@v1
-        with:
-          args: zip -X -r build/wp-api-privacy.zip . -x *.git* node_modules/\* .* "*/\.*" CODE_OF_CONDUCT.md CONTRIBUTING.md ISSUE_TEMPLATE.md PULL_REQUEST_TEMPLATE.md *.dist *.yml *.neon composer.* dev-helpers** build** wporg-assets** phpunit**
+        run: >-
+          zip -X -r build/wp-api-privacy.zip .
+          -x '*.git*' 'node_modules/*' '.*' '*/.*'
+          CODE_OF_CONDUCT.md CONTRIBUTING.md ISSUE_TEMPLATE.md PULL_REQUEST_TEMPLATE.md
+          '*.dist' '*.yml' '*.neon' 'composer.*'
+          'dev-helpers*' 'build*' 'wporg-assets*' 'phpunit*' 'tests/*'
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
             name: wp-api-privacy
             path: build/wp-api-privacy.zip
+      # The plugin's updater installs the first asset of the release, so this
+      # .zip file has to stay the only asset.
       - name: Upload to release
-        uses: JasonEtco/upload-to-release@master
-        with:
-          args: build/wp-api-privacy.zip application/zip
+        run: gh release upload "$RELEASE_TAG" build/wp-api-privacy.zip
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
