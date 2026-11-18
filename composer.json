@@ -3,22 +3,41 @@
     "type": "wordpress-plugin",
     "description": "Strips potentially identifying information from outbound requests to the WordPress.org API",
     "license": "GPL-3.0-or-later",
-    "keywords": [ "wordpress", "plugin", "privacy" ],
+    "keywords": [
+        "wordpress",
+        "plugin",
+        "privacy"
+    ],
     "authors": [
-        { "name": "Duane Storey", "email": "duanestorey@gmail.com" }
+        {
+            "name": "Duane Storey",
+            "email": "duanestorey@gmail.com"
+        }
     ],
     "require": {
         "composer/installers": "^1.0 || ^2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^11"
+        "phpunit/phpunit": "^11",
+        "brain/monkey": "^2.6",
+        "php-parallel-lint/php-parallel-lint": "^1.4"
     },
     "scripts": {
-        "phpunit": "vendor/bin/phpunit"
+        "test": [
+            "@php ./vendor/phpunit/phpunit/phpunit"
+        ],
+        "lint": [
+            "@php ./vendor/php-parallel-lint/php-parallel-lint/parallel-lint . -e php --show-deprecated --exclude vendor --exclude node_modules --exclude .git"
+        ]
     },
     "config": {
         "allow-plugins": {
             "composer/installers": true
-        }   
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WP_Privacy\\WP_API_Privacy\\Tests\\": "tests/"
+        }
     }
 }
