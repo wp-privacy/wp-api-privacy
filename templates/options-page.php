@@ -23,7 +23,7 @@
 
 	<form method="post" action="options-general.php?page=api-privacy"> 
 		<input type="hidden" name="wp_api_privacy_settings" value="1">
-		<input type="hidden" name="wp_api_privacy_nonce" value="<?php echo wp_create_nonce( 'wpprivacy' ); ?>">
+		<input type="hidden" name="wp_api_privacy_nonce" value="<?php echo esc_attr( wp_create_nonce( 'wpprivacy' ) ); ?>">
 		<table class="form-table" role="presentation">
 			<tbody>
 				<?php foreach ( $this->settingsSections as $name => $data ) { ?>
