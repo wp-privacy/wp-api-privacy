@@ -119,6 +119,8 @@ class ApiPrivacy extends GithubUpdater {
 
 			return $split[0];
 		}
+
+		return $str;
 	}
 
 	public function modifyUserAgent( $params, $url ) {
@@ -147,7 +149,7 @@ class ApiPrivacy extends GithubUpdater {
 		}
 
 		$behaviour = $this->getSetting( 'user_agent_behaviour' );
-		if ( $behaviour != 'none' ) {
+		if ( $behaviour != 'none' && ! empty( $params['user-agent'] ) ) {
 			switch ( $behaviour ) {
 				case 'strip_wp':
 					if ( $isWordPressAPI ) {

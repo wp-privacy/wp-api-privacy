@@ -100,6 +100,61 @@ final class UserAgentTest extends TestCase {
 		self::assertStringNotContainsString( 'example.com', $user_agent );
 	}
 
+	public function test_strip_wp_keeps_user_agent_without_site_url() {
+		$this->allow_saving_settings();
+
+		$params = $this->get_instance( [ 'user_agent_behaviour' => 'strip_wp' ] )->modifyUserAgent( [ 'user-agent' => 'WordPress/' . self::WP_VERSION ], self::WP_API_URL );
+
+		self::assertSame( 'WordPress/Private', $params['user-agent'] );
+	}
+
+	public function test_strip_all_keeps_user_agent_without_site_url() {
+		$this->allow_saving_settings();
+
+		$params = $this->get_instance( [ 'user_agent_behaviour' => 'strip_all' ] )->modifyUserAgent( [ 'user-agent' => 'MyPlugin/1.0' ], self::OTHER_URL );
+
+		self::assertSame( 'MyPlugin/1.0', $params['user-agent'] );
+	}
+
+	public function test_modify_wp_adds_hash_to_user_agent_without_site_url() {
+		$this->allow_saving_settings();
+
+		$params = $this->get_instance( [ 'user_agent_behaviour' => 'modify_wp' ] )->modifyUserAgent( [ 'user-agent' => 'MyPlugin/1.0' ], self::WP_API_URL );
+
+		self::assertSame( 'MyPlugin/1.0; ' . $this->site_hash(), $params['user-agent'] );
+	}
+
+	public function test_modify_all_adds_hash_to_user_agent_without_site_url() {
+		$this->allow_saving_settings();
+
+		$params = $this->get_instance( [ 'user_agent_behaviour' => 'modify_all' ] )->modifyUserAgent( [ 'user-agent' => 'WordPress/' . self::WP_VERSION ], self::OTHER_URL );
+
+		self::assertSame( 'WordPress/Private; ' . $this->site_hash(), $params['user-agent'] );
+	}
+
+	public function test_missing_user_agent_is_left_alone_in_every_mode() {
+		Functions\expect( 'update_option' )->never();
+
+		foreach ( [ 'strip_wp', 'strip_all', 'modify_wp', 'modify_all' ] as $behaviour ) {
+			$params = $this->get_instance( [ 'user_agent_behaviour' => $behaviour ] )->modifyUserAgent( [], self::WP_API_URL );
+
+			self::assertSame( [], $params, $behaviour );
+		}
+	}
+
+	public function test_empty_user_agent_is_left_alone_in_every_mode() {
+		Functions\expect( 'update_option' )->never();
+
+		foreach ( [ 'strip_wp', 'strip_all', 'modify_wp', 'modify_all' ] as $behaviour ) {
+			foreach ( [ '', null ] as $user_agent ) {
+				$original = [ 'user-agent' => $user_agent ];
+				$params   = $this->get_instance( [ 'user_agent_behaviour' => $behaviour ] )->modifyUserAgent( $original, self::WP_API_URL );
+
+				self::assertSame( $original, $params, $behaviour );
+			}
+		}
+	}
+
 	public function test_nothing_changes_or_is_counted_when_everything_is_off() {
 		Functions\expect( 'update_option' )->never();
 
