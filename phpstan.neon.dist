@@ -1,0 +1,12 @@
+includes:
+  - phpstan-baseline.neon
+
+parameters:
+  level: 6
+  paths:
+    - wp-api-privacy.php
+    - src
+    - templates
+  # Dependencies are not locked (composer.lock is not committed), so a newer
+  # PHPStan may no longer report something that is in the baseline.
+  reportUnmatchedIgnoredErrors: false

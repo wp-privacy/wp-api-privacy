@@ -1,0 +1,547 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Class WP_Privacy\\WP_API_Privacy\\GitHubUpdater referenced with incorrect case\: WP_Privacy\\WP_API_Privacy\\GithubUpdater\.$#'
+			identifier: class.nameCase
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Constant WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:USER_AGENT is unused\.$#'
+			identifier: classConstant.unused
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:addActionLinks\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:addActionLinks\(\) has parameter \$actions with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:filterCoreArgs\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:filterCoreArgs\(\) has parameter \$args with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:getSetting\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:getSetting\(\) has parameter \$name with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:getUniqueSiteHash\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:init\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:instance\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:maybeModifyCurl\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:maybeModifyCurl\(\) has parameter \$handle with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:maybeModifyCurl\(\) has parameter \$params with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:maybeModifyCurl\(\) has parameter \$url with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:modifyRestUser\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:modifyRestUser\(\) has parameter \$request with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:modifyRestUser\(\) has parameter \$response with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:modifyRestUser\(\) has parameter \$user with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:modifyUserAgent\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:modifyUserAgent\(\) has parameter \$params with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:modifyUserAgent\(\) has parameter \$url with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:removeUrlFromUserAgent\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:removeUrlFromUserAgent\(\) has parameter \$str with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:updateApiModificationCount\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Property WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:\$instance has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^Property WP_Privacy\\WP_API_Privacy\\ApiPrivacy\:\:\$settings has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/api-privacy.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:__construct\(\) has parameter \$githubBranch with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:__construct\(\) has parameter \$githubProject with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:__construct\(\) has parameter \$githubUser with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:__construct\(\) has parameter \$pluginSlug with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:checkForUpdate\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:deleteTransients\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:generateChangeLog\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:generateChangeLog\(\) has parameter \$releaseInfo with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:getHeaderData\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:getHeaderData\(\) has parameter \$default with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:getHeaderData\(\) has parameter \$headerData with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:getHeaderData\(\) has parameter \$key with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:getHeaderInfo\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:getReleaseInfo\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:handlePluginInfo\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:handlePluginInfo\(\) has parameter \$action with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:handlePluginInfo\(\) has parameter \$params with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:handlePluginInfo\(\) has parameter \$response with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:handleUpdate\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:handleUpdate\(\) has parameter \$transient with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:hasValidInfo\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:setupGithubUrls\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:setupTransientKeys\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Property WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:\$cacheModifier has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Property WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:\$gibhubMainPhp has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Property WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:\$githubBranch has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Property WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:\$githubProject has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Property WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:\$githubTagApi has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Property WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:\$githubUser has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Property WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:\$headerCacheKey has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Property WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:\$pluginSlug has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Property WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:\$tagCacheKey has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Property WP_Privacy\\WP_API_Privacy\\GitHubUpdater\:\:\$updateInfo has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/github-updater.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:addSetting\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:addSetting\(\) has parameter \$settingDesc with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:addSetting\(\) has parameter \$settingName with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:addSetting\(\) has parameter \$settingType with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:addSettingsSection\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:addSettingsSection\(\) has parameter \$desc with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:addSettingsSection\(\) has parameter \$section with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:addSettingsSection\(\) has parameter \$settings with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:deleteAllOptions\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:doOptionsHeader\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:getDefaultSettings\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:getSetting\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:getSetting\(\) has parameter \$name with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:init\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:loadSettings\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:processSubmittedSettings\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:renderOneSetting\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:renderOneSetting\(\) has parameter \$setting with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:renderSettingsPage\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:saveSettings\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:setSetting\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:setSetting\(\) has parameter \$name with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:setSetting\(\) has parameter \$value with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Method WP_Privacy\\WP_API_Privacy\\Settings\:\:setupSettingsPage\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Property WP_Privacy\\WP_API_Privacy\\Settings\:\:\$settings has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Property WP_Privacy\\WP_API_Privacy\\Settings\:\:\$settingsSections has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/settings.php
+
+		-
+			message: '#^Variable \$this might not be defined\.$#'
+			identifier: variable.undefined
+			count: 5
+			path: templates/options-page.php
+
+		-
+			message: '#^Function WP_Privacy\\WP_API_Privacy\\handle_uninstall\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: wp-api-privacy.php
+
+		-
+			message: '#^Function WP_Privacy\\WP_API_Privacy\\initialize_privacy\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: wp-api-privacy.php
+
+		-
+			message: '#^Function WP_Privacy\\WP_API_Privacy\\initialize_privacy\(\) has parameter \$params with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: wp-api-privacy.php
