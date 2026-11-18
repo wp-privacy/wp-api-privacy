@@ -42,6 +42,9 @@
         ],
         "phpstan": [
             "@php ./vendor/bin/phpstan analyse --memory-limit=2048M"
+        ],
+        "phpunit": [
+            "@test"
         ]
     },
     "config": {
