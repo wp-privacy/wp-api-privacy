@@ -127,19 +127,10 @@
 	</rule>
 
 	<!--
-	Security findings in the existing code. These deserve a proper look instead of
-	a baseline entry: see the settings form handling in src/settings.php, the
-	REQUEST_URI check in src/github-updater.php and the nonce field in the template.
+	Security finding in the existing code. This deserves a proper look instead of
+	a baseline entry: see the REQUEST_URI check in src/github-updater.php.
 	-->
-	<rule ref="WordPress.Security.NonceVerification.Missing">
-		<exclude-pattern>/src/settings\.php$</exclude-pattern>
-	</rule>
 	<rule ref="WordPress.Security.ValidatedSanitizedInput">
-		<exclude-pattern>/src/settings\.php$</exclude-pattern>
 		<exclude-pattern>/src/github-updater\.php$</exclude-pattern>
-	</rule>
-	<rule ref="WordPress.Security.EscapeOutput.OutputNotEscaped">
-		<exclude-pattern>/src/settings\.php$</exclude-pattern>
-		<exclude-pattern>/templates/options-page\.php$</exclude-pattern>
 	</rule>
 </ruleset>

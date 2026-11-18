@@ -17,6 +17,9 @@ class Settings {
 	public const SETTING_KEY = 'wp_api_privacy_settings';
 	public const UPDATED_KEY = 'wp_api_privacy_updated';
 
+	// The values the user_agent_behaviour setting can have
+	public const USER_AGENT_BEHAVIOURS = [ 'none', 'strip_wp', 'strip_all', 'modify_wp', 'modify_all' ];
+
 	protected $settings         = null;
 	protected $settingsSections = [];
 
@@ -81,21 +84,26 @@ class Settings {
 
 	public function processSubmittedSettings() {
 		// These are our settings
-		if ( isset( $_POST['wp_api_privacy_settings'] ) ) {
-			$nonce = $_POST['wp_api_privacy_nonce'];
-			if ( wp_verify_nonce( $nonce, 'wpprivacy' ) && current_user_can( 'manage_options' ) ) {
-				// get a list of submitted settings that don't include our hidden fields
+		if ( isset( $_POST['wp_api_privacy_settings'] ) && isset( $_POST['wp_api_privacy_nonce'] ) ) {
+			if ( wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wp_api_privacy_nonce'] ) ), 'wpprivacy' ) && current_user_can( 'manage_options' ) ) {
+				// Only settings that are fields in the form are processed, the type of the default value tells which kind of field it is
 				$defaultSettings = $this->getDefaultSettings();
-				foreach ( $defaultSettings as $name => $dontNeed ) {
-					if ( isset( $_POST[ 'wpcheckbox_' . $name ] ) ) {
+				foreach ( $defaultSettings as $name => $defaultValue ) {
+					if ( is_bool( $defaultValue ) ) {
 						// this is a checkbox
-						if ( isset( $_POST[ 'wpsetting_' . $name ] ) ) {
-							$this->settings->$name = true;
-						} else {
-							$this->settings->$name = false;
+						if ( isset( $_POST[ 'wpcheckbox_' . $name ] ) ) {
+							if ( isset( $_POST[ 'wpsetting_' . $name ] ) ) {
+								$this->settings->$name = true;
+							} else {
+								$this->settings->$name = false;
+							}
 						}
-					} elseif ( isset( $_POST[ 'wpsetting_' . $name ] ) ) {
-							$this->settings->$name = $_POST[ 'wpsetting_' . $name ];
+					} elseif ( 'user_agent_behaviour' === $name && isset( $_POST[ 'wpsetting_' . $name ] ) ) {
+						// this is a select, only its known values are accepted
+						$value = sanitize_text_field( wp_unslash( $_POST[ 'wpsetting_' . $name ] ) );
+						if ( in_array( $value, self::USER_AGENT_BEHAVIOURS, true ) ) {
+							$this->settings->$name = $value;
+						}
 					}
 				}
 
@@ -166,9 +174,8 @@ class Settings {
 	public function renderOneSetting( $setting ) {
 		switch ( $setting->type ) {
 			case 'checkbox':
-				$checked = ( $this->getSetting( $setting->name ) ? ' checked' : '' );
 				echo '<label for="wpsetting_' . esc_attr( $setting->name ) . '">';
-				echo '<input type="checkbox" name="wpsetting_' . esc_attr( $setting->name ) . '" ' . $checked . '/> ';
+				echo '<input type="checkbox" name="wpsetting_' . esc_attr( $setting->name ) . '"' . checked( (bool) $this->getSetting( $setting->name ), true, false ) . ' /> ';
 				echo '<input type="hidden" name="wpcheckbox_' . esc_attr( $setting->name ) . '" value="1" />';
 				echo esc_html( $setting->desc ) . '</label>';
 				echo '<br>';
@@ -177,8 +184,7 @@ class Settings {
 				echo '<select name="wpsetting_' . esc_attr( $setting->name ) . '">';
 				$currentSetting = $this->getSetting( $setting->name );
 				foreach ( $setting->desc as $key => $value ) {
-					$selected = ( $currentSetting == $key ) ? ' selected' : '';
-					echo '<option value="' . esc_attr( $key ) . '"' . $selected . '>' . esc_html( $value ) . '</option>';
+					echo '<option value="' . esc_attr( $key ) . '"' . selected( $currentSetting, $key, false ) . '>' . esc_html( $value ) . '</option>';
 				}
 				echo '</select><br>';
 				break;
