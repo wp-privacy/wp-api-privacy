@@ -9,7 +9,7 @@
 	Version: 1.2.4
 	Requires PHP: 7.4
 	Requires at least: 6.0
-	Tested up to: 6.8
+	Tested up to: 7.2
 	Update URI: https://github.com/wp-privacy/wp-api-privacy
 	Stable: 1.2.4
 	Text Domain: wp-api-privacy
