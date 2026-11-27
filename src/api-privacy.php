@@ -30,6 +30,7 @@ class ApiPrivacy extends GithubUpdater {
 		add_filter( 'rest_prepare_user', array( $this, 'modifyRestUser' ), 10, 3 );
 		add_action( 'http_api_curl', array( $this, 'maybeModifyCurl' ), 10, 3 );
 		add_filter( 'core_version_check_query_args', array( $this, 'filterCoreArgs' ) );
+		add_filter( 'pre_http_request', array( $this, 'maybeBlockRequest' ), 10, 3 );
 
 		// Plugin action links
 		add_filter( 'plugin_action_links_' . plugin_basename( PRIVACY_MAIN_FILE ), array( $this, 'addActionLinks' ) );
@@ -75,10 +76,9 @@ class ApiPrivacy extends GithubUpdater {
 	}
 
 	public function maybeModifyCurl( $handle, $params, $url ) {
-		$wasModified = false;
-
 		if ( $handle ) {
-			if ( $this->getSetting( 'disable_https' ) ) {
+			// Requests to GitHub stay on HTTPS: they fetch this plugin's updates, which could be swapped over plain HTTP
+			if ( $this->getSetting( 'disable_https' ) && ! $this->isGithubUrl( $url ) ) {
 				$url = str_replace( 'https://', 'http://', $url );
 
 				curl_setopt( $handle, CURLOPT_URL, $url );
@@ -86,6 +86,39 @@ class ApiPrivacy extends GithubUpdater {
 		}
 
 		return $handle;
+	}
+
+	/**
+	 * Blocks Browse Happy requests, which send the admin's browser User-Agent to WordPress.org
+	 * to check whether the browser is outdated. The dashboard then just skips that notice.
+	 *
+	 * @param false|array<string, mixed>|\WP_Error $preempt What earlier filters returned, false to send the request.
+	 * @param array<string, mixed>                 $args    The request arguments.
+	 * @param string                               $url     The request URL.
+	 *
+	 * @return false|array<string, mixed>|\WP_Error
+	 */
+	public function maybeBlockRequest( $preempt, $args, $url ) {
+		if ( false === $preempt && $this->getSetting( 'block_browse_happy' ) && preg_match( '#^https?://api\.wordpress\.org/core/browse-happy/#i', $url ) ) { // phpcs:ignore WordPress.WP.CapitalPDangit.MisspelledInText -- A hostname.
+			$this->updateApiModificationCount();
+
+			return new \WP_Error( 'http_request_failed', __( 'Blocked by WP API Privacy.', 'wp-api-privacy' ) );
+		}
+
+		return $preempt;
+	}
+
+	/**
+	 * Whether a URL is on github.com or githubusercontent.com, or a subdomain of them.
+	 *
+	 * @param string $url The URL.
+	 *
+	 * @return bool
+	 */
+	private function isGithubUrl( $url ) {
+		$host = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+
+		return (bool) preg_match( '#(^|\.)(github\.com|githubusercontent\.com)$#', $host );
 	}
 
 	public function modifyRestUser( $response, $user, $request ) {

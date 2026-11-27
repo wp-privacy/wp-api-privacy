@@ -7,19 +7,44 @@
 
 namespace WP_Privacy\WP_API_Privacy;
 
+/**
+ * Offers plugin updates from GitHub.
+ *
+ * Only public URLs are used, never the GitHub API: unauthenticated API requests
+ * are limited to 60 an hour per IP, which many sites on one shared host run out of.
+ *
+ * - The latest version is the Stable header of the main plugin file on the branch.
+ * - The update is the release asset {project}.zip of the release tagged with that version.
+ * - The changelog is CHANGELOG.md on the branch.
+ */
 class GitHubUpdater {
-	private const CACHE_TIME = ( 60 * 60 ); // 15 minutes
+	// How long a successful check is cached. A forced check at Dashboard > Updates ignores it.
+	private const CACHE_TIME = ( 15 * 60 );
+
+	// How long a failed check is cached, so a GitHub outage isn't retried on every page load.
+	private const RETRY_TIME = ( 5 * 60 );
+
+	// Cached in place of a check that failed.
+	private const FAILED = 'failed';
 
 	protected $pluginSlug    = null;
 	protected $githubUser    = null;
 	protected $githubProject = null;
 	protected $githubBranch  = null;
-	protected $gibhubMainPhp = null;
-	protected $githubTagApi  = null;
 
-	protected $tagCacheKey    = null;
-	protected $headerCacheKey = null;
-	protected $cacheModifier  = null;
+	/**
+	 * Transient key of the cached update check.
+	 *
+	 * @var string|null
+	 */
+	protected $checkCacheKey = null;
+
+	/**
+	 * Transient key of the cached changelog.
+	 *
+	 * @var string|null
+	 */
+	protected $changeLogCacheKey = null;
 
 	protected $updateInfo = null;
 
@@ -30,12 +55,10 @@ class GitHubUpdater {
 		$this->githubBranch  = $githubBranch;
 
 		if ( $this->hasValidInfo() && current_user_can( 'update_plugins' ) ) {
-			$this->setupGithubUrls();
 			$this->setupTransientKeys();
 
 			// check if the user has manually tried to check all updates at Home/Updates in the WP admin
-			if ( is_admin() && strpos( $_SERVER['REQUEST_URI'], 'update-core.php?force-check=1' ) !== false ) {
-				// Take this out for now, need to think about API considerations
+			if ( is_admin() && isset( $_SERVER['REQUEST_URI'] ) && strpos( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), 'update-core.php?force-check=1' ) !== false ) {
 				$this->deleteTransients();
 			}
 
@@ -69,7 +92,6 @@ class GitHubUpdater {
 				'homepage'       => 'pluginUri',
 				'download_link'  => 'updateUrl',
 				'requires_php'   => 'requiresPhp',
-				'last_updated'   => 'updatedAt',
 			);
 
 			foreach ( $mappings as $key1 => $key2 ) {
@@ -80,12 +102,13 @@ class GitHubUpdater {
 
 			$response->sections = [];
 
-			if ( isset( $this->updateInfo->description ) ) {
+			if ( ! empty( $this->updateInfo->description ) ) {
 				$response->sections['description'] = $this->updateInfo->description;
 			}
 
-			if ( isset( $this->updateInfo->changeLog ) ) {
-				$response->sections['changelog'] = $this->updateInfo->changeLog;
+			$changeLog = $this->getChangeLog();
+			if ( $changeLog ) {
+				$response->sections['changelog'] = $changeLog;
 			}
 
 			if ( $this->updateInfo->banner ) {
@@ -105,7 +128,7 @@ class GitHubUpdater {
 		if ( $this->updateInfo ) {
 			if ( version_compare( PRIVACY_VERSION, $this->updateInfo->version, '<' ) &&
 				version_compare( $this->updateInfo->requires, get_bloginfo( 'version' ), '<=' ) &&
-				version_compare( $this->updateInfo->requiresPhp, PHP_VERSION, '<' )
+				version_compare( $this->updateInfo->requiresPhp, PHP_VERSION, '<=' )
 			) {
 				$response = new \stdClass();
 
@@ -127,31 +150,34 @@ class GitHubUpdater {
 	}
 
 	protected function setupTransientKeys() {
-		$this->cacheModifier = md5( $this->pluginSlug );
+		$cacheModifier = md5( $this->pluginSlug );
 
-		$this->tagCacheKey    = 'wp_priv_tag_' . $this->cacheModifier;
-		$this->headerCacheKey = 'wp_priv_hdr_' . $this->cacheModifier;
+		$this->checkCacheKey     = 'wp_priv_check_' . $cacheModifier;
+		$this->changeLogCacheKey = 'wp_priv_log_' . $cacheModifier;
 	}
 
-	private function setupGithubUrls() {
-		$this->gibhubMainPhp = 'https://raw.githubusercontent.com/' . $this->githubUser . '/' . $this->githubProject .
-			'/refs/heads/' . $this->githubBranch . '/' . basename( $this->pluginSlug );
-
-		$this->githubTagApi = 'https://api.github.com/repos/' . $this->githubUser . '/' . $this->githubProject . '/releases';
+	/**
+	 * The public URL of a file on the branch.
+	 *
+	 * @param string $file The file path in the repository.
+	 *
+	 * @return string
+	 */
+	private function getRawUrl( $file ) {
+		return 'https://raw.githubusercontent.com/' . $this->githubUser . '/' . $this->githubProject .
+			'/refs/heads/' . $this->githubBranch . '/' . $file;
 	}
 
-	private function generateChangeLog( $releaseInfo ) {
-		$changeLog = '';
-		foreach ( $releaseInfo as $release ) {
-			if ( $release->target_commitish != $this->githubBranch ) {
-				continue;
-			}
-
-			$changeLog .= '<strong>' . $release->tag_name . ' - ' . $release->name . '</strong>';
-			$changeLog .= '<p>' . str_replace( "\r\n", '<br>', $release->body ) . '</p>';
-		}
-
-		return $changeLog;
+	/**
+	 * The public download URL of the release zip for a version.
+	 *
+	 * @param string $version The version, which is also the release tag.
+	 *
+	 * @return string
+	 */
+	private function getPackageUrl( $version ) {
+		return 'https://github.com/' . $this->githubUser . '/' . $this->githubProject .
+			'/releases/download/' . rawurlencode( $version ) . '/' . $this->githubProject . '.zip';
 	}
 
 	private function getHeaderData( $headerData, $key, $default = false ) {
@@ -165,94 +191,193 @@ class GitHubUpdater {
 	}
 
 	private function checkForUpdate() {
-		$headerData  = $this->getHeaderInfo();
-		$releaseInfo = $this->getReleaseInfo();
-
-		if ( $headerData && $releaseInfo ) {
-			$latestVersion = $headerData['stable'];
-
-			if ( $latestVersion ) {
-				foreach ( $releaseInfo as $release ) {
-					if ( $release->tag_name == $latestVersion && $release->target_commitish == $this->githubBranch ) {
-						// found
-						$this->updateInfo = new \stdClass();
-
-						$this->updateInfo->requires    = $this->getHeaderData( $headerData, 'requires at least' );
-						$this->updateInfo->testedUpTo  = $this->getHeaderData( $headerData, 'tested up to' );
-						$this->updateInfo->requiresPhp = $this->getHeaderData( $headerData, 'requires php' );
-						$this->updateInfo->name        = $this->getHeaderData( $headerData, 'plugin name' );
-						$this->updateInfo->pluginUri   = $this->getHeaderData( $headerData, 'plugin uri' );
-						$this->updateInfo->description = $this->getHeaderData( $headerData, 'description' );
-						$this->updateInfo->author      = $this->getHeaderData( $headerData, 'author' );
-						$this->updateInfo->authorUri   = $this->getHeaderData( $headerData, 'author uri' );
-						$this->updateInfo->banner      = $this->getHeaderData( $headerData, 'banner' );
-
-						$this->updateInfo->updatedAt = date( 'Y-m-d H:i', strtotime( $release->published_at ) );
-						$this->updateInfo->changeLog = $this->generateChangeLog( $releaseInfo );
-
-						$this->updateInfo->version = $latestVersion;
-
-						if ( isset( $release->assets ) && isset( $release->assets[0]->browser_download_url ) ) {
-							$this->updateInfo->updateUrl = $release->assets[0]->browser_download_url;
-						}
-
-						break;
-					}
-				}
-			}
+		$headerData = $this->getUpdateCheck();
+		if ( ! $headerData ) {
+			return;
 		}
+
+		$this->updateInfo = new \stdClass();
+
+		$this->updateInfo->requires    = $this->getHeaderData( $headerData, 'requires at least', '0' );
+		$this->updateInfo->testedUpTo  = $this->getHeaderData( $headerData, 'tested up to' );
+		$this->updateInfo->requiresPhp = $this->getHeaderData( $headerData, 'requires php', '0' );
+		$this->updateInfo->name        = $this->getHeaderData( $headerData, 'plugin name' );
+		$this->updateInfo->pluginUri   = $this->getHeaderData( $headerData, 'plugin uri' );
+		$this->updateInfo->description = $this->getHeaderData( $headerData, 'description' );
+		$this->updateInfo->author      = $this->getHeaderData( $headerData, 'author' );
+		$this->updateInfo->authorUri   = $this->getHeaderData( $headerData, 'author uri' );
+		$this->updateInfo->banner      = $this->getHeaderData( $headerData, 'banner' );
+
+		$this->updateInfo->version   = $headerData['stable'];
+		$this->updateInfo->updateUrl = $this->getPackageUrl( $headerData['stable'] );
+	}
+
+	/**
+	 * The headers of the main plugin file on the branch, if its Stable version has a release zip.
+	 *
+	 * @return array<string, string>|false
+	 */
+	private function getUpdateCheck() {
+		$cached = get_transient( $this->checkCacheKey );
+		if ( false !== $cached ) {
+			return is_array( $cached ) ? $cached : false;
+		}
+
+		$headerData = $this->getHeaderInfo();
+
+		// The Stable header can be pushed before the release zip is uploaded, so the zip has to exist
+		if ( ! $headerData || ! $this->isVersion( $headerData['stable'] ?? '' ) || ! $this->packageExists( $this->getPackageUrl( $headerData['stable'] ) ) ) {
+			set_transient( $this->checkCacheKey, self::FAILED, self::RETRY_TIME );
+			return false;
+		}
+
+		set_transient( $this->checkCacheKey, $headerData, self::CACHE_TIME );
+
+		return $headerData;
+	}
+
+	/**
+	 * Whether a value looks like a version number, such as 1.3.0 or 1.3.0-beta1.
+	 *
+	 * @param string $version The value.
+	 *
+	 * @return bool
+	 */
+	private function isVersion( $version ) {
+		return (bool) preg_match( '#^\d+(\.\d+)*([-+][0-9A-Za-z.]+)?$#', $version );
 	}
 
 	private function deleteTransients() {
 		if ( $this->hasValidInfo() ) {
-			delete_transient( $this->tagCacheKey );
-			delete_transient( $this->headerCacheKey );
+			delete_transient( $this->checkCacheKey );
+			delete_transient( $this->changeLogCacheKey );
 		}
 	}
 
-	private function getReleaseInfo() {
-		// Use the Github API to obtain release information
-		$githubTagData = get_transient( $this->tagCacheKey );
-		if ( ! $githubTagData ) {
-			$result = wp_remote_get( $this->githubTagApi );
-			if ( ! is_wp_error( $result ) ) {
-				$githubTagData = json_decode( wp_remote_retrieve_body( $result ) );
-
-				if ( $githubTagData ) {
-					set_transient( $this->tagCacheKey, $githubTagData, self::CACHE_TIME );
-				}
-			}
+	/**
+	 * Fetches a public URL.
+	 *
+	 * @param string $url The URL.
+	 *
+	 * @return string|false The body, or false unless the response was a 200.
+	 */
+	private function getRemoteBody( $url ) {
+		$result = wp_remote_get( $url );
+		if ( is_wp_error( $result ) || 200 !== (int) wp_remote_retrieve_response_code( $result ) ) {
+			return false;
 		}
 
-		return $githubTagData;
+		return wp_remote_retrieve_body( $result );
 	}
 
+	/**
+	 * Whether a release zip can be downloaded. GitHub redirects existing release assets to its CDN.
+	 *
+	 * @param string $url The release zip URL.
+	 *
+	 * @return bool
+	 */
+	private function packageExists( $url ) {
+		$result = wp_remote_head( $url );
+		if ( is_wp_error( $result ) ) {
+			return false;
+		}
+
+		$code = (int) wp_remote_retrieve_response_code( $result );
+
+		return ( $code >= 200 && $code < 400 );
+	}
+
+	/**
+	 * Parses the headers of the main plugin file on the branch.
+	 *
+	 * @return array<string, string>|false
+	 */
 	private function getHeaderInfo() {
-		// Parse the main header file from the Github repo
-		$headerData = get_transient( $this->headerCacheKey );
-		if ( ! $headerData ) {
-			$result = wp_remote_get( $this->gibhubMainPhp );
-			if ( $result ) {
-				if ( ! is_wp_error( $result ) ) {
-					$body = wp_remote_retrieve_body( $result );
-					if ( $body ) {
-						if ( preg_match_all( '#[\s]+(.*): (.*)#', $body, $matches ) ) {
-							$headers = [];
+		$body = $this->getRemoteBody( $this->getRawUrl( basename( $this->pluginSlug ) ) );
 
-							for ( $i = 0; $i < count( $matches[0] ); $i++ ) {
-								$headers[ strtolower( $matches[1][ $i ] ) ] = $matches[2][ $i ];
-							}
+		// Only the first comment block holds the plugin headers
+		if ( ! $body || ! preg_match( '#/\*(.*?)\*/#s', $body, $comment ) ) {
+			return false;
+		}
 
-							$headerData = $headers;
-						}
+		if ( ! preg_match_all( '#^[ \t*]*([A-Za-z][A-Za-z ]*?):[ \t]*(.*?)[ \t]*\r?$#m', $comment[1], $matches, PREG_SET_ORDER ) ) {
+			return false;
+		}
 
-						set_transient( $this->headerCacheKey, $headerData, self::CACHE_TIME );
-						delete_transient( $this->tagCacheKey );
-					}
-				}
+		$headers = [];
+		foreach ( $matches as $match ) {
+			$key = strtolower( $match[1] );
+			if ( ! isset( $headers[ $key ] ) ) {
+				$headers[ $key ] = $match[2];
 			}
 		}
 
-		return $headerData;
+		return $headers;
+	}
+
+	/**
+	 * The changelog as HTML, from CHANGELOG.md on the branch. Only fetched when the plugin details are viewed.
+	 *
+	 * @return string Empty if it can't be fetched.
+	 */
+	private function getChangeLog() {
+		$cached = get_transient( $this->changeLogCacheKey );
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
+		$markdown = $this->getRemoteBody( $this->getRawUrl( 'CHANGELOG.md' ) );
+		if ( ! $markdown ) {
+			set_transient( $this->changeLogCacheKey, '', self::RETRY_TIME );
+			return '';
+		}
+
+		$changeLog = $this->formatChangeLog( $markdown );
+		set_transient( $this->changeLogCacheKey, $changeLog, self::CACHE_TIME );
+
+		return $changeLog;
+	}
+
+	/**
+	 * Turns the headings, list items and paragraphs of CHANGELOG.md into HTML.
+	 *
+	 * @param string $markdown The changelog.
+	 *
+	 * @return string
+	 */
+	private function formatChangeLog( $markdown ) {
+		$html   = '';
+		$inList = false;
+
+		foreach ( preg_split( '/\R/', $markdown ) as $line ) {
+			$line = trim( $line );
+
+			if ( preg_match( '#^[-*]\s+(.*)$#', $line, $match ) ) {
+				if ( ! $inList ) {
+					$html  .= '<ul>';
+					$inList = true;
+				}
+				$html .= '<li>' . esc_html( $match[1] ) . '</li>';
+				continue;
+			}
+
+			if ( $inList ) {
+				$html  .= '</ul>';
+				$inList = false;
+			}
+
+			if ( preg_match( '#^\#+\s+(.*)$#', $line, $match ) ) {
+				$html .= '<h4>' . esc_html( $match[1] ) . '</h4>';
+			} elseif ( '' !== $line ) {
+				$html .= '<p>' . esc_html( $line ) . '</p>';
+			}
+		}
+
+		if ( $inList ) {
+			$html .= '</ul>';
+		}
+
+		return $html;
 	}
 }

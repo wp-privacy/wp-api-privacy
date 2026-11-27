@@ -49,6 +49,9 @@ abstract class TestCase extends PHPUnit_TestCase {
 
 		Functions\when( 'plugin_basename' )->justReturn( 'wp-api-privacy/wp-api-privacy.php' );
 
+		// A wrapper around parse_url() in WordPress.
+		Functions\when( 'wp_parse_url' )->alias( 'parse_url' );
+
 		// Keeps the GitHub updater inert: it only sets itself up for users who can update plugins.
 		Functions\when( 'current_user_can' )->justReturn( false );
 

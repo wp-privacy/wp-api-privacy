@@ -116,6 +116,7 @@ final class SettingsFormTest extends TestCase {
 			'strip_core_data',
 			'strip_core_headers',
 			'strip_user_logins',
+			'block_browse_happy',
 			'disable_https',
 			'reset_settings',
 		];
@@ -153,6 +154,7 @@ final class SettingsFormTest extends TestCase {
 		self::assertFalse( $this->stored->strip_themes );
 		self::assertFalse( $this->stored->strip_core_data );
 		self::assertFalse( $this->stored->strip_core_headers );
+		self::assertFalse( $this->stored->block_browse_happy );
 		self::assertFalse( $this->stored->reset_settings );
 		self::assertSame( 0, $this->stored->modification_count );
 

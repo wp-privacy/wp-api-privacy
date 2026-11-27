@@ -62,6 +62,7 @@ class Settings {
 				$this->addSetting( 'checkbox', 'strip_core_data', __( 'Modify data sent to core update API', 'wp-api-privacy' ) ),
 				$this->addSetting( 'checkbox', 'strip_core_headers', __( 'Strip wp_blog and wp_install headers', 'wp-api-privacy' ) ),
 				$this->addSetting( 'checkbox', 'strip_user_logins', __( 'Strip user login info from JSON API', 'wp-api-privacy' ) ),
+				$this->addSetting( 'checkbox', 'block_browse_happy', __( 'Block Browse Happy requests, which send your browser and operating system to WordPress.org', 'wp-api-privacy' ) ),
 			)
 		);
 
@@ -203,6 +204,7 @@ class Settings {
 		$settings->strip_core_data    = true;
 		$settings->strip_core_headers = true;
 		$settings->strip_user_logins  = true;
+		$settings->block_browse_happy = true;
 		$settings->disable_https      = false;
 
 		$settings->modification_count = 0;

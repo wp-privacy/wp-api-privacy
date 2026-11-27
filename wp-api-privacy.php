@@ -2,11 +2,11 @@
 /*
 	Plugin Name: WP API Privacy
 	Plugin URI: https://github.com/wp-privacy/wp-api-privacy
-	Banner: https://github.com/wp-privacy/wp-api-privacy/blob/main/assets/banner.jpg?raw=true
+	Banner: https://raw.githubusercontent.com/wp-privacy/wp-api-privacy/main/assets/banner-1544x500.jpg
 	Description: Strips potentially identifying information from outbound requests to the WordPress.org API
 	Author: Duane Storey
 	Author URI: https://duanestorey.com
-	Version: 1.2.4
+	Version: 1.3.0
 	Requires PHP: 7.4
 	Requires at least: 6.0
 	Tested up to: 7.2
@@ -14,6 +14,7 @@
 	Stable: 1.2.4
 	Text Domain: wp-api-privacy
 	Domain Path: /lang
+	Network: true
 	GitHub Plugin URI: wp-privacy/wp-api-privacy
 	Authority: https://plugins.duanestorey.com
 	Primary Branch: main
@@ -30,7 +31,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'PRIVACY_VERSION', '1.2.4' );
+define( 'PRIVACY_VERSION', '1.3.0' );
 define( 'PRIVACY_PATH', __DIR__ );
 define( 'PRIVACY_MAIN_FILE', __FILE__ );
 define( 'PRIVACY_PATH_SRC', __DIR__ . '/src' );

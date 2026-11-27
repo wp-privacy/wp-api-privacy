@@ -21,3 +21,8 @@ define( 'PRIVACY_PATH_SRC', dirname( __DIR__ ) . '/src' );
 
 // Loads the updater and settings classes as well.
 require_once PRIVACY_PATH_SRC . '/api-privacy.php';
+
+// A stand-in for WordPress's WP_Error, which filters return to block a request.
+if ( ! class_exists( 'WP_Error' ) ) {
+	require_once __DIR__ . '/stubs/class-wp-error.php';
+}

@@ -22,7 +22,7 @@ final class SettingsTest extends TestCase {
 
 		self::assertSame( 'strip_wp', $settings->getSetting( 'user_agent_behaviour' ) );
 
-		foreach ( [ 'strip_wp_version', 'strip_plugins', 'strip_themes', 'strip_core_data', 'strip_core_headers', 'strip_user_logins' ] as $name ) {
+		foreach ( [ 'strip_wp_version', 'strip_plugins', 'strip_themes', 'strip_core_data', 'strip_core_headers', 'strip_user_logins', 'block_browse_happy' ] as $name ) {
 			self::assertTrue( $settings->getSetting( $name ), $name );
 		}
 
