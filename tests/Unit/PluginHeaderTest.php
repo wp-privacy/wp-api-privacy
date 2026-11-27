@@ -28,6 +28,14 @@ final class PluginHeaderTest extends PHPUnit_TestCase {
 		return $match[1];
 	}
 
+	/**
+	 * On multisite, updates only appear in Network Admin, which only loads the updater
+	 * when the plugin is network-activated (or active on the main site).
+	 */
+	public function test_plugin_can_only_be_network_activated() {
+		self::assertSame( 'true', $this->header( 'Network' ) );
+	}
+
 	public function test_banner_is_a_file_in_the_repository() {
 		$prefix = 'https://raw.githubusercontent.com/wp-privacy/wp-api-privacy/main/';
 		$banner = $this->header( 'Banner' );

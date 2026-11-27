@@ -14,6 +14,7 @@
 	Stable: 1.2.4
 	Text Domain: wp-api-privacy
 	Domain Path: /lang
+	Network: true
 	GitHub Plugin URI: wp-privacy/wp-api-privacy
 	Authority: https://plugins.duanestorey.com
 	Primary Branch: main
