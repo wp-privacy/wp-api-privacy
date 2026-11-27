@@ -2,7 +2,7 @@
 /*
 	Plugin Name: WP API Privacy
 	Plugin URI: https://github.com/wp-privacy/wp-api-privacy
-	Banner: https://github.com/wp-privacy/wp-api-privacy/blob/main/assets/banner.jpg?raw=true
+	Banner: https://raw.githubusercontent.com/wp-privacy/wp-api-privacy/main/assets/banner-1544x500.jpg
 	Description: Strips potentially identifying information from outbound requests to the WordPress.org API
 	Author: Duane Storey
 	Author URI: https://duanestorey.com
