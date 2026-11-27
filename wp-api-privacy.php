@@ -6,7 +6,7 @@
 	Description: Strips potentially identifying information from outbound requests to the WordPress.org API
 	Author: Duane Storey
 	Author URI: https://duanestorey.com
-	Version: 1.2.4
+	Version: 1.3.0
 	Requires PHP: 7.4
 	Requires at least: 6.0
 	Tested up to: 7.2
@@ -31,7 +31,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'PRIVACY_VERSION', '1.2.4' );
+define( 'PRIVACY_VERSION', '1.3.0' );
 define( 'PRIVACY_PATH', __DIR__ );
 define( 'PRIVACY_MAIN_FILE', __FILE__ );
 define( 'PRIVACY_PATH_SRC', __DIR__ . '/src' );
