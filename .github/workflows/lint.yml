@@ -1,0 +1,61 @@
+name: Lint
+
+on:
+  # Run on pushes to select branches and on all pull requests.
+  push:
+    branches:
+      - main
+      - develop
+      - 'release/**'
+      - 'hotfix/[0-9]+.[0-9]+*'
+  pull_request:
+  # Allow manually triggering the workflow.
+  workflow_dispatch:
+
+# Cancels all previous workflow runs for the same branch that have not yet completed.
+concurrency:
+  # The concurrency group contains the workflow name and the branch name.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php_version: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+
+    name: "Lint: PHP ${{ matrix.php_version }}"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: ${{ matrix.php_version }}
+          ini-values: zend.assertions=1, error_reporting=-1, display_errors=On
+          coverage: none
+          tools: cs2pr
+
+      # The lint stage only needs PHP Parallel Lint. The other dev tools are not
+      # needed here, and PHPUnit 11 cannot be installed on PHP < 8.2.
+      - name: 'Composer: keep only the linter'
+        run: composer remove --dev --no-update --no-scripts --no-interaction phpunit/phpunit brain/monkey wp-coding-standards/wpcs phpcompatibility/phpcompatibility-wp phpstan/phpstan szepeviktor/phpstan-wordpress phpstan/extension-installer
+
+      # Install dependencies and handle caching in one go.
+      # @link https://github.com/marketplace/actions/install-composer-dependencies
+      - name: Install Composer dependencies
+        uses: ramsey/composer-install@a8d0d959dab41457692a5e2041bd9b757a119e3f # 3.2.1
+        with:
+          # Bust the cache at least once a month - output format: YYYY-MM-DD.
+          custom-cache-suffix: $(date -u -d "-0 month -$(($(date +%d)-1)) days" "+%F")
+
+      - name: Lint against parse errors
+        run: composer lint -- --checkstyle | cs2pr

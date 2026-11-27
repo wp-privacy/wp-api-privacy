@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="WP API Privacy" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/PHPCSStandards/PHP_CodeSniffer/master/phpcs.xsd">
+
+	<description>The coding standard for the WP API Privacy plugin.</description>
+
+	<file>.</file>
+
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/build/*</exclude-pattern>
+	<!-- Generated translation files. -->
+	<exclude-pattern>/lang/*</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+	<arg name="basepath" value="."/>
+	<arg name="parallel" value="8"/>
+	<arg value="sp"/>
+
+	<rule ref="WordPress">
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+		<exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
+		<exclude name="WordPress.PHP.YodaConditions"/>
+	</rule>
+
+	<config name="testVersion" value="7.4-"/>
+	<rule ref="PHPCompatibilityWP">
+		<include-pattern>*\.php</include-pattern>
+	</rule>
+
+	<config name="minimum_wp_version" value="6.0"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="wp-api-privacy"/>
+			</property>
+		</properties>
+	</rule>
+	<!--
+	#############################################################################
+	PROJECT STYLE
+	The plugin uses camelCase methods, properties and variables and does not use
+	the "class-" file naming scheme. Renaming those would change the public API.
+	#############################################################################
+	-->
+	<rule ref="WordPress.NamingConventions.ValidVariableName">
+		<exclude-pattern>/src/*</exclude-pattern>
+		<exclude-pattern>/templates/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid">
+		<exclude-pattern>/src/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.Files.FileName">
+		<exclude-pattern>/src/*</exclude-pattern>
+		<!-- PHPUnit expects test files to be named after their class. -->
+		<exclude-pattern>/tests/*</exclude-pattern>
+	</rule>
+
+	<!--
+	#############################################################################
+	BASELINE
+	Findings in the code as it was when PHPCS was introduced. They are excluded
+	for the existing files only, so new files are checked in full. Remove a
+	pattern when the file is cleaned up.
+	#############################################################################
+	-->
+
+	<!-- Missing or non-standard documentation. -->
+	<rule ref="Squiz.Commenting.FileComment">
+		<exclude-pattern>/src/*</exclude-pattern>
+		<exclude-pattern>/templates/options-page\.php$</exclude-pattern>
+		<exclude-pattern>/wp-api-privacy\.php$</exclude-pattern>
+	</rule>
+	<rule ref="Squiz.Commenting.ClassComment.Missing">
+		<exclude-pattern>/src/*</exclude-pattern>
+	</rule>
+	<rule ref="Squiz.Commenting.FunctionComment.Missing">
+		<exclude-pattern>/src/*</exclude-pattern>
+		<exclude-pattern>/wp-api-privacy\.php$</exclude-pattern>
+		<!-- Test method names describe what they test. -->
+		<exclude-pattern>/tests/*</exclude-pattern>
+	</rule>
+	<rule ref="Squiz.Commenting.VariableComment">
+		<exclude-pattern>/src/*</exclude-pattern>
+	</rule>
+	<rule ref="Squiz.Commenting.InlineComment.InvalidEndChar">
+		<exclude-pattern>/src/*</exclude-pattern>
+		<exclude-pattern>/wp-api-privacy\.php$</exclude-pattern>
+	</rule>
+	<rule ref="Squiz.PHP.CommentedOutCode.Found">
+		<exclude-pattern>/src/api-privacy\.php$</exclude-pattern>
+	</rule>
+
+	<!-- Loose comparisons. Not auto-fixed: making them strict can change behaviour. -->
+	<rule ref="Universal.Operators.StrictComparisons">
+		<exclude-pattern>/src/*</exclude-pattern>
+	</rule>
+
+	<!-- Code quality findings that need a code change to resolve. -->
+	<rule ref="Squiz.Scope.MethodScope.Missing">
+		<exclude-pattern>/src/api-privacy\.php$</exclude-pattern>
+		<exclude-pattern>/src/settings\.php$</exclude-pattern>
+	</rule>
+	<rule ref="Generic.CodeAnalysis.UnusedFunctionParameter.Found">
+		<exclude-pattern>/wp-api-privacy\.php$</exclude-pattern>
+	</rule>
+	<rule ref="Generic.CodeAnalysis.ForLoopWithTestFunctionCall.NotAllowed">
+		<exclude-pattern>/src/github-updater\.php$</exclude-pattern>
+	</rule>
+	<rule ref="Squiz.PHP.DisallowSizeFunctionsInLoops.Found">
+		<exclude-pattern>/src/github-updater\.php$</exclude-pattern>
+	</rule>
+	<rule ref="Universal.NamingConventions.NoReservedKeywordParameterNames.defaultFound">
+		<exclude-pattern>/src/github-updater\.php$</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.DateTime.RestrictedFunctions.date_date">
+		<exclude-pattern>/src/github-updater\.php$</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.AlternativeFunctions.json_encode_json_encode">
+		<exclude-pattern>/src/api-privacy\.php$</exclude-pattern>
+		<!-- The tests run without WordPress, so wp_json_encode() is not available. -->
+		<exclude-pattern>/tests/*</exclude-pattern>
+	</rule>
+	<!-- The plugin hooks into http_api_curl, where it has to work on the cURL handle. -->
+	<rule ref="WordPress.WP.AlternativeFunctions.curl_curl_setopt">
+		<exclude-pattern>/src/api-privacy\.php$</exclude-pattern>
+	</rule>
+
+	<!--
+	Security finding in the existing code. This deserves a proper look instead of
+	a baseline entry: see the REQUEST_URI check in src/github-updater.php.
+	-->
+	<rule ref="WordPress.Security.ValidatedSanitizedInput">
+		<exclude-pattern>/src/github-updater\.php$</exclude-pattern>
+	</rule>
+</ruleset>
