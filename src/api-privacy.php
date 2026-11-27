@@ -75,10 +75,9 @@ class ApiPrivacy extends GithubUpdater {
 	}
 
 	public function maybeModifyCurl( $handle, $params, $url ) {
-		$wasModified = false;
-
 		if ( $handle ) {
-			if ( $this->getSetting( 'disable_https' ) ) {
+			// Requests to GitHub stay on HTTPS: they fetch this plugin's updates, which could be swapped over plain HTTP
+			if ( $this->getSetting( 'disable_https' ) && ! $this->isGithubUrl( $url ) ) {
 				$url = str_replace( 'https://', 'http://', $url );
 
 				curl_setopt( $handle, CURLOPT_URL, $url );
@@ -86,6 +85,19 @@ class ApiPrivacy extends GithubUpdater {
 		}
 
 		return $handle;
+	}
+
+	/**
+	 * Whether a URL is on github.com or githubusercontent.com, or a subdomain of them.
+	 *
+	 * @param string $url The URL.
+	 *
+	 * @return bool
+	 */
+	private function isGithubUrl( $url ) {
+		$host = strtolower( (string) wp_parse_url( $url, PHP_URL_HOST ) );
+
+		return (bool) preg_match( '#(^|\.)(github\.com|githubusercontent\.com)$#', $host );
 	}
 
 	public function modifyRestUser( $response, $user, $request ) {
