@@ -47,8 +47,8 @@ jobs:
         with:
             name: wp-api-privacy
             path: build/wp-api-privacy.zip
-      # The plugin's updater installs the first asset of the release, so this
-      # .zip file has to stay the only asset.
+      # The plugin's updater downloads releases/download/{tag}/wp-api-privacy.zip,
+      # where the tag is the Stable header (no "v" prefix), so keep this file name.
       - name: Upload to release
         run: gh release upload "$RELEASE_TAG" build/wp-api-privacy.zip
         env:
